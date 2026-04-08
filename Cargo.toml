@@ -1,0 +1,11 @@
+[package]
+name = "button"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+name = "button_lib"
+crate-type = ["rlib"]
+
+[dependencies]
+macroquad = "0.4.14"
