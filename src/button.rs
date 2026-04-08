@@ -24,6 +24,7 @@ pub struct Button {
     shape: Shape,
     color: Color,
     text: String,
+    text_scale: f32,
     toggle: bool,
     state: State,
     text_dimensions: TextDimensions,
@@ -37,21 +38,23 @@ impl Button {
         shape: Shape,
         color: Color,
         text: String,
+        text_scale: f32,
         toggle: bool,
     ) -> Self {
-        let text_size: f32 = (size.x / measure_text(&text, None, 1, 1.0).width)
-            .min(size.y / measure_text(&text, None, 1, 1.0).height);
-        Button {
+        let mut button = Button {
             pos,
             size,
             shape,
             color,
-            text: text.clone(),
+            text,
+            text_scale,
             toggle,
             state: Idle,
-            text_dimensions: measure_text(&text, None, text_size as u16, 1.0),
-            text_size,
-        }
+            text_dimensions: measure_text("", None, 0, 1.0),
+            text_size: 0.0,
+        };
+        button.update_text_size_and_dimension();
+        button
     }
 
     pub fn render(&self) {
@@ -84,6 +87,38 @@ impl Button {
                 a: 1.0,
             },
         );
+    }
+
+    pub fn set_pos(&mut self, pos: Vec2) {
+        self.pos = pos;
+    }
+
+    pub fn set_size(&mut self, size: Vec2) {
+        self.size = size;
+        self.update_text_size_and_dimension();
+    }
+
+    pub fn set_shape(&mut self, shape: Shape) {
+        self.shape = shape;
+        self.update_text_size_and_dimension();
+    }
+
+    pub fn set_color(&mut self, color: Color) {
+        self.color = color;
+    }
+
+    pub fn set_text(&mut self, text: String) {
+        self.text = text;
+        self.update_text_size_and_dimension();
+    }
+
+    pub fn set_text_scale(&mut self, text_scale: f32) {
+        self.text_scale = text_scale;
+        self.update_text_size_and_dimension();
+    }
+
+    pub fn set_toggle(&mut self, toggle: bool) {
+        self.toggle = toggle;
     }
 
     pub fn get_state(&mut self) -> State {
@@ -146,10 +181,10 @@ impl Button {
         self.state = Disabled;
     }
 
-    pub fn set_text(&mut self, text: String) {
-        self.text_size = (self.size.x / measure_text(&text, None, 1, 1.0).width)
-            .min(self.size.y / measure_text(&text, None, 1, 1.0).height);
-        self.text_dimensions = measure_text(&text, None, self.text_size as u16, 1.0);
-        self.text = text;
+    fn update_text_size_and_dimension(&mut self) {
+        self.text_size = (self.size.x / measure_text(&self.text, None, 1, 1.0).width)
+            .min(self.size.y / measure_text(&self.text, None, 1, 1.0).height)
+            * self.text_scale;
+        self.text_dimensions = measure_text(&self.text, None, self.text_size as u16, 1.0);
     }
 }
