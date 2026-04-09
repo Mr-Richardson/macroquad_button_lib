@@ -121,7 +121,8 @@ impl Button {
         self.toggle = toggle;
     }
 
-    pub fn get_state(&mut self) -> State {  //TODO: cleaner implementation
+    pub fn get_state(&mut self) -> State {
+        //TODO: cleaner implementation
         if self.state != Disabled {
             let mouse_pos: Vec2 = vec2(mouse_position().0, mouse_position().1);
             let mut over: bool = false;
