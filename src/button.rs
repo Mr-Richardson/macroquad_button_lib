@@ -4,7 +4,7 @@ use macroquad::input::{is_mouse_button_down, is_mouse_button_pressed};
 use macroquad::math::{Vec2, vec2};
 use macroquad::prelude::{Font, TextDimensions, TextParams, draw_text_ex, mouse_position};
 use macroquad::shapes::{draw_ellipse, draw_rectangle};
-use macroquad::text::{measure_text};
+use macroquad::text::measure_text;
 
 pub enum Shape {
     Rectangle,
@@ -33,6 +33,7 @@ pub struct Button<'a> {
 }
 
 impl<'a> Button<'a> {
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         pos: Vec2,
         size: Vec2,
@@ -83,7 +84,7 @@ impl<'a> Button<'a> {
             self.pos.x - self.text_dimensions.width * 0.5,
             self.pos.y + self.text_dimensions.height * 0.5,
             TextParams {
-                font: Some(&self.font),
+                font: Some(self.font),
                 font_size: self.text_size as u16,
                 color: Color {
                     r: 1.0 - self.color.r,
@@ -195,9 +196,10 @@ impl<'a> Button<'a> {
     }
 
     fn update_text_size_and_dimension(&mut self) {
-        self.text_size = (self.size.x / measure_text(&self.text, Some(&self.font), 1, 1.0).width)
-            .min(self.size.y / measure_text(&self.text, Some(&self.font), 1, 1.0).height)
+        self.text_size = (self.size.x / measure_text(&self.text, Some(self.font), 1, 1.0).width)
+            .min(self.size.y / measure_text(&self.text, Some(self.font), 1, 1.0).height)
             * self.text_scale;
-        self.text_dimensions = measure_text(&self.text, Some(&self.font), self.text_size as u16, 1.0);
+        self.text_dimensions =
+            measure_text(&self.text, Some(self.font), self.text_size as u16, 1.0);
     }
 }
