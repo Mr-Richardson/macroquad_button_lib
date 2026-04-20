@@ -2,9 +2,9 @@ use self::State::{Disabled, Hovered, Idle, Pressed};
 use macroquad::color::Color;
 use macroquad::input::{is_mouse_button_down, is_mouse_button_pressed};
 use macroquad::math::{Vec2, vec2};
-use macroquad::prelude::{TextDimensions, mouse_position};
+use macroquad::prelude::{Font, TextDimensions, TextParams, draw_text_ex, mouse_position};
 use macroquad::shapes::{draw_ellipse, draw_rectangle};
-use macroquad::text::{draw_text, measure_text};
+use macroquad::text::{measure_text};
 
 pub enum Shape {
     Rectangle,
@@ -18,20 +18,21 @@ pub enum State {
     Pressed,
     Disabled,
 }
-pub struct Button {
+pub struct Button<'a> {
     pos: Vec2,
     size: Vec2,
     shape: Shape,
     color: Color,
     text: String,
     text_scale: f32,
+    font: &'a Font,
     toggle: bool,
     state: State,
     text_dimensions: TextDimensions,
     text_size: f32,
 }
 
-impl Button {
+impl<'a> Button<'a> {
     pub fn new(
         pos: Vec2,
         size: Vec2,
@@ -39,6 +40,7 @@ impl Button {
         color: Color,
         text: String,
         text_scale: f32,
+        font: &'a Font,
         toggle: bool,
     ) -> Self {
         let mut button = Button {
@@ -48,6 +50,7 @@ impl Button {
             color,
             text,
             text_scale,
+            font,
             toggle,
             state: Idle,
             text_dimensions: measure_text("", None, 0, 1.0),
@@ -75,16 +78,20 @@ impl Button {
                 self.color,
             ),
         }
-        draw_text(
+        draw_text_ex(
             &self.text,
             self.pos.x - self.text_dimensions.width * 0.5,
             self.pos.y + self.text_dimensions.height * 0.5,
-            self.text_size,
-            Color {
-                r: 1.0 - self.color.r,
-                g: 1.0 - self.color.g,
-                b: 1.0 - self.color.b,
-                a: 1.0,
+            TextParams {
+                font: Some(&self.font),
+                font_size: self.text_size as u16,
+                color: Color {
+                    r: 1.0 - self.color.r,
+                    g: 1.0 - self.color.g,
+                    b: 1.0 - self.color.b,
+                    a: 1.0,
+                },
+                ..Default::default()
             },
         );
     }
@@ -114,6 +121,11 @@ impl Button {
 
     pub fn set_text_scale(&mut self, text_scale: f32) {
         self.text_scale = text_scale;
+        self.update_text_size_and_dimension();
+    }
+
+    pub fn set_font(&mut self, font: &'a Font) {
+        self.font = font;
         self.update_text_size_and_dimension();
     }
 
@@ -183,9 +195,9 @@ impl Button {
     }
 
     fn update_text_size_and_dimension(&mut self) {
-        self.text_size = (self.size.x / measure_text(&self.text, None, 1, 1.0).width)
-            .min(self.size.y / measure_text(&self.text, None, 1, 1.0).height)
+        self.text_size = (self.size.x / measure_text(&self.text, Some(&self.font), 1, 1.0).width)
+            .min(self.size.y / measure_text(&self.text, Some(&self.font), 1, 1.0).height)
             * self.text_scale;
-        self.text_dimensions = measure_text(&self.text, None, self.text_size as u16, 1.0);
+        self.text_dimensions = measure_text(&self.text, Some(&self.font), self.text_size as u16, 1.0);
     }
 }
