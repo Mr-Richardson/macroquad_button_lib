@@ -10,21 +10,33 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  check-and-test:
+  fmt:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: swatinem/rust-cache@v2
-
-      - name: Install rustfmt and clippy
-        run: rustup component add rustfmt clippy
-
+      
+      - name: Install rustfmt
+        run: rustup component add rustfmt
+        
       - name: Style Check
         run: cargo fmt --all -- --check
-
+  clippy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: swatinem/rust-cache@v2
+      
+      - name: Install clippy
+        run: rustup component add clippy
+        
       - name: Clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
-
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: swatinem/rust-cache@v2
+      
       - name: Run Tests
         run: cargo test --all-targets --all-features
