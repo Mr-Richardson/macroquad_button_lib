@@ -1,10 +1,10 @@
 use self::State::{Disabled, Hovered, Idle, Pressed};
 use macroquad::color::Color;
 use macroquad::input::{is_mouse_button_down, is_mouse_button_pressed};
-use macroquad::math::{Vec2, vec2};
-use macroquad::prelude::{Font, TextDimensions, TextParams, draw_text_ex, mouse_position};
+use macroquad::math::{vec2, Vec2};
+use macroquad::prelude::{mouse_position, Font};
 use macroquad::shapes::{draw_ellipse, draw_rectangle};
-use macroquad::text::measure_text;
+use text_lib::text::Alignment;
 
 pub enum Shape {
     Rectangle,
@@ -18,47 +18,43 @@ pub enum State {
     Pressed,
     Disabled,
 }
-pub struct Button<'a> {
+
+pub struct Text {
+    text: String,
+    font: Font,
+    size: u16,
+    color: Color,
+}
+
+pub struct Button {
     pos: Vec2,
     size: Vec2,
     shape: Shape,
     color: Color,
-    text: String,
-    text_scale: f32,
-    font: &'a Font,
     toggle: bool,
+    text: text_lib::text::Text,
     state: State,
-    text_dimensions: TextDimensions,
-    text_size: f32,
 }
 
-impl<'a> Button<'a> {
+impl Button {
     #[allow(clippy::too_many_arguments)]
     pub fn new(
         pos: Vec2,
         size: Vec2,
         shape: Shape,
         color: Color,
-        text: String,
-        text_scale: f32,
-        font: &'a Font,
         toggle: bool,
+        text: Text,
     ) -> Self {
-        let mut button = Button {
+        Button {
             pos,
             size,
             shape,
             color,
-            text,
-            text_scale,
-            font,
+            text: text_lib::text::Text::new(pos, size.x * 0.9, text.text, text.font, Alignment { x: text_lib::text::AlignX::Center, y: text_lib::text::AlignY::Center }, text.size, text.color),
             toggle,
             state: Idle,
-            text_dimensions: measure_text("", None, 0, 1.0),
-            text_size: 0.0,
-        };
-        button.update_text_size_and_dimension();
-        button
+        }
     }
 
     pub fn render(&self) {
@@ -79,55 +75,41 @@ impl<'a> Button<'a> {
                 self.color,
             ),
         }
-        draw_text_ex(
-            &self.text,
-            self.pos.x - self.text_dimensions.width * 0.5,
-            self.pos.y + self.text_dimensions.height * 0.5,
-            TextParams {
-                font: Some(self.font),
-                font_size: self.text_size as u16,
-                color: Color {
-                    r: 1.0 - self.color.r,
-                    g: 1.0 - self.color.g,
-                    b: 1.0 - self.color.b,
-                    a: 1.0,
-                },
-                ..Default::default()
-            },
-        );
+        self.text.draw();
     }
 
     pub fn set_pos(&mut self, pos: Vec2) {
         self.pos = pos;
+        self.text.set_pos(pos);
     }
 
     pub fn set_size(&mut self, size: Vec2) {
         self.size = size;
-        self.update_text_size_and_dimension();
+        self.text.set_max_w(size.x * 0.9);
     }
 
     pub fn set_shape(&mut self, shape: Shape) {
         self.shape = shape;
-        self.update_text_size_and_dimension();
     }
 
     pub fn set_color(&mut self, color: Color) {
         self.color = color;
     }
 
-    pub fn set_text(&mut self, text: String) {
-        self.text = text;
-        self.update_text_size_and_dimension();
+    pub fn set_text_text(&mut self, text: String) {
+        self.text.set_text(text);
     }
 
-    pub fn set_text_scale(&mut self, text_scale: f32) {
-        self.text_scale = text_scale;
-        self.update_text_size_and_dimension();
+    pub fn set_text_font(&mut self, font: Font) {
+        self.text.set_font(font);
     }
 
-    pub fn set_font(&mut self, font: &'a Font) {
-        self.font = font;
-        self.update_text_size_and_dimension();
+    pub fn set_text_size(&mut self, size: u16) {
+        self.text.set_size(size);
+    }
+
+    pub fn set_text_color(&mut self, color: Color) {
+        self.text.set_color(color);
     }
 
     pub fn set_toggle(&mut self, toggle: bool) {
@@ -193,13 +175,5 @@ impl<'a> Button<'a> {
 
     pub fn disable(&mut self) {
         self.state = Disabled;
-    }
-
-    fn update_text_size_and_dimension(&mut self) {
-        self.text_size = (self.size.x / measure_text(&self.text, Some(self.font), 1, 1.0).width)
-            .min(self.size.y / measure_text(&self.text, Some(self.font), 1, 1.0).height)
-            * self.text_scale;
-        self.text_dimensions =
-            measure_text(&self.text, Some(self.font), self.text_size as u16, 1.0);
     }
 }
