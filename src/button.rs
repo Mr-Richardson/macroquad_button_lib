@@ -19,24 +19,24 @@ pub enum State {
     Disabled,
 }
 
-pub struct Text {
+pub struct Text<'a> {
     text: String,
-    font: Font,
+    font: &'a Font,
     size: u16,
     color: Color,
 }
 
-pub struct Button {
+pub struct Button<'a> {
     pos: Vec2,
     size: Vec2,
     shape: Shape,
     color: Color,
     toggle: bool,
-    text: text_lib::text::Text,
+    text: text_lib::text::Text<'a>,
     state: State,
 }
 
-impl Button {
+impl<'a> Button<'a> {
     #[allow(clippy::too_many_arguments)]
     pub fn new(
         pos: Vec2,
@@ -44,7 +44,7 @@ impl Button {
         shape: Shape,
         color: Color,
         toggle: bool,
-        text: Text,
+        text: Text<'a>,
     ) -> Self {
         Button {
             pos,
@@ -100,7 +100,7 @@ impl Button {
         self.text.set_text(text);
     }
 
-    pub fn set_text_font(&mut self, font: Font) {
+    pub fn set_text_font(&mut self, font: &'a Font) {
         self.text.set_font(font);
     }
 
