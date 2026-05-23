@@ -20,10 +20,10 @@ pub enum State {
 }
 
 pub struct Text {
-    text: String,
-    font: Font,
-    size: u16,
-    color: Color,
+    pub text: String,
+    pub font: Font,
+    pub size: u16,
+    pub color: Color,
 }
 
 pub struct Button {
