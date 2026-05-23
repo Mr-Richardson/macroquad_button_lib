@@ -1,8 +1,8 @@
 use self::State::{Disabled, Hovered, Idle, Pressed};
 use macroquad::color::Color;
 use macroquad::input::{is_mouse_button_down, is_mouse_button_pressed};
-use macroquad::math::{vec2, Vec2};
-use macroquad::prelude::{mouse_position, Font};
+use macroquad::math::{Vec2, vec2};
+use macroquad::prelude::{Font, mouse_position};
 use macroquad::shapes::{draw_ellipse, draw_rectangle};
 use text_lib::text::Alignment;
 
@@ -11,7 +11,7 @@ pub enum Shape {
     Ellipse,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(PartialEq, Clone, Copy)]
 pub enum State {
     Idle,
     Hovered,
@@ -19,24 +19,24 @@ pub enum State {
     Disabled,
 }
 
-pub struct Text<'a> {
+pub struct Text {
     text: String,
-    font: &'a Font,
+    font: Font,
     size: u16,
     color: Color,
 }
 
-pub struct Button<'a> {
+pub struct Button {
     pos: Vec2,
     size: Vec2,
     shape: Shape,
     color: Color,
     toggle: bool,
-    text: text_lib::text::Text<'a>,
+    text: text_lib::text::Text,
     state: State,
 }
 
-impl<'a> Button<'a> {
+impl Button {
     #[allow(clippy::too_many_arguments)]
     pub fn new(
         pos: Vec2,
@@ -44,14 +44,25 @@ impl<'a> Button<'a> {
         shape: Shape,
         color: Color,
         toggle: bool,
-        text: Text<'a>,
+        text: Text,
     ) -> Self {
         Button {
             pos,
             size,
             shape,
             color,
-            text: text_lib::text::Text::new(pos, size.x * 0.9, text.text, text.font, Alignment { x: text_lib::text::AlignX::Center, y: text_lib::text::AlignY::Center }, text.size, text.color),
+            text: text_lib::text::Text::new(
+                pos,
+                size.x * 0.9,
+                text.text,
+                text.font,
+                Alignment {
+                    x: text_lib::text::AlignX::Center,
+                    y: text_lib::text::AlignY::Center,
+                },
+                text.size,
+                text.color,
+            ),
             toggle,
             state: Idle,
         }
@@ -100,7 +111,7 @@ impl<'a> Button<'a> {
         self.text.set_text(text);
     }
 
-    pub fn set_text_font(&mut self, font: &'a Font) {
+    pub fn set_text_font(&mut self, font: Font) {
         self.text.set_font(font);
     }
 
