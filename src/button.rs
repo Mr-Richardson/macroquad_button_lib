@@ -195,6 +195,7 @@ mod tests {
     use super::*;
     use macroquad::prelude::*;
 
+    #[ignore = "Requires a graphical window, skip in CI"]
     #[test]
     fn button_test() {
         macroquad::Window::new("Integration Test", async {
