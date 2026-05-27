@@ -188,3 +188,38 @@ impl Button {
         self.state = Disabled;
     }
 }
+
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+    use macroquad::prelude::*;
+
+    #[ignore = "Requires a graphical window, skip in CI"]
+    #[test]
+    fn button_test() {
+        macroquad::Window::new("Integration Test", async {
+            let content = "A quick brown fox jumps.".to_string();
+            let b1 = Button::new(
+                vec2(200.0, 200.0),
+                vec2(200.0, 200.0),
+                Shape::Ellipse,
+                RED,
+                false,
+                Text {
+                    text: content,
+                    font: load_ttf_font("JetBrainsMono-VariableFont_wght.ttf")
+                        .await
+                        .unwrap(),
+                    size: 24,
+                    color: BLUE,
+                },
+            );
+            loop {
+                clear_background(BLACK);
+                b1.render();
+                next_frame().await;
+            }
+        });
+    }
+}
