@@ -16,5 +16,5 @@ name = "button_lib"
 crate-type = ["rlib"]
 
 [dependencies]
-macroquad = "0.4.14"
+macroquad = "0.4.15"
 text_lib = { git = "https://github.com/Mr-Richardson/macroquad_text_lib" }
