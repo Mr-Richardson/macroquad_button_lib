@@ -247,7 +247,7 @@ checksum = "703d5c7ef118737c72f1af64ad2f6f8c5e1921f818cdcb97b8fe6fc69bf66214"
 [[package]]
 name = "text_lib"
 version = "0.1.0"
-source = "git+https://github.com/Mr-Richardson/macroquad_text_lib#3073f473aca9bfea199326efe8f7bc036f405622"
+source = "git+https://github.com/Mr-Richardson/macroquad_text_lib#779edfb78ce1943f06cab09db7b9e8b5762a4493"
 dependencies = [
  "macroquad",
 ]
