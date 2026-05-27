@@ -96,7 +96,7 @@ impl Button {
 
     pub fn set_size(&mut self, size: Vec2) {
         self.size = size;
-        self.text.set_max_w(size.x * 0.9);
+        self.text.set_width(size.x * 0.9);
     }
 
     pub fn set_shape(&mut self, shape: Shape) {
