@@ -38,14 +38,7 @@ pub struct Button {
 
 impl Button {
     #[allow(clippy::too_many_arguments)]
-    pub fn new(
-        pos: Vec2,
-        size: Vec2,
-        shape: Shape,
-        color: Color,
-        toggle: bool,
-        text: Text,
-    ) -> Self {
+    pub fn new(pos: Vec2, size: Vec2, shape: Shape, color: Color, toggle: bool, text: Text) -> Self {
         Button {
             pos,
             size,
@@ -70,21 +63,8 @@ impl Button {
 
     pub fn render(&self) {
         match self.shape {
-            Shape::Rectangle => draw_rectangle(
-                self.pos.x - self.size.x * 0.5,
-                self.pos.y - self.size.y * 0.5,
-                self.size.x,
-                self.size.y,
-                self.color,
-            ),
-            Shape::Ellipse => draw_ellipse(
-                self.pos.x,
-                self.pos.y,
-                self.size.x * 0.5,
-                self.size.y * 0.5,
-                0.0,
-                self.color,
-            ),
+            Shape::Rectangle => draw_rectangle(self.pos.x - self.size.x * 0.5, self.pos.y - self.size.y * 0.5, self.size.x, self.size.y, self.color),
+            Shape::Ellipse => draw_ellipse(self.pos.x, self.pos.y, self.size.x * 0.5, self.size.y * 0.5, 0.0, self.color),
         }
         self.text.draw();
     }
@@ -134,19 +114,12 @@ impl Button {
             let mut over: bool = false;
             match self.shape {
                 Shape::Ellipse => {
-                    if 1.0
-                        >= (mouse_pos.x - self.pos.x) * (mouse_pos.x - self.pos.x)
-                            / ((self.size.x * 0.5) * (self.size.x * 0.5))
-                            + (mouse_pos.y - self.pos.y) * (mouse_pos.y - self.pos.y)
-                                / ((self.size.y * 0.5) * (self.size.y * 0.5))
-                    {
+                    if 1.0 >= (mouse_pos.x - self.pos.x) * (mouse_pos.x - self.pos.x) / ((self.size.x * 0.5) * (self.size.x * 0.5)) + (mouse_pos.y - self.pos.y) * (mouse_pos.y - self.pos.y) / ((self.size.y * 0.5) * (self.size.y * 0.5)) {
                         over = true;
                     }
                 }
                 Shape::Rectangle => {
-                    if (mouse_pos.x - self.pos.x).abs() <= self.size.x * 0.5
-                        && (mouse_pos.y - self.pos.y).abs() <= self.size.y * 0.5
-                    {
+                    if (mouse_pos.x - self.pos.x).abs() <= self.size.x * 0.5 && (mouse_pos.y - self.pos.y).abs() <= self.size.y * 0.5 {
                         over = true;
                     }
                 }
@@ -208,9 +181,7 @@ mod tests {
                 false,
                 Text {
                     text: content,
-                    font: load_ttf_font("JetBrainsMono-VariableFont_wght.ttf")
-                        .await
-                        .unwrap(),
+                    font: get_default_font(),
                     size: 24,
                     color: BLUE,
                 },
