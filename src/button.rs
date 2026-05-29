@@ -62,11 +62,13 @@ impl Button {
     }
 
     pub fn render(&self) {
-        match self.shape {
-            Shape::Rectangle => draw_rectangle(self.pos.x - self.size.x * 0.5, self.pos.y - self.size.y * 0.5, self.size.x, self.size.y, self.color),
-            Shape::Ellipse => draw_ellipse(self.pos.x, self.pos.y, self.size.x * 0.5, self.size.y * 0.5, 0.0, self.color),
+        if self.size.x != 0.0 || self.size.y != 0.0 {
+            match self.shape {
+                Shape::Rectangle => draw_rectangle(self.pos.x - self.size.x * 0.5, self.pos.y - self.size.y * 0.5, self.size.x, self.size.y, self.color),
+                Shape::Ellipse => draw_ellipse(self.pos.x, self.pos.y, self.size.x * 0.5, self.size.y * 0.5, 0.0, self.color),
+            }
+            self.text.draw();
         }
-        self.text.draw();
     }
 
     pub fn set_pos(&mut self, pos: Vec2) {
