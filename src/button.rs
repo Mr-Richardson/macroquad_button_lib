@@ -77,10 +77,8 @@ impl Button {
     }
 
     pub fn set_size(&mut self, size: Vec2) {
-        if self.size != size {
-            self.size = size;
-            self.text.set_width(size.x * 0.9);
-        }
+        self.size = size;
+        self.text.set_width(size.x * 0.9);
     }
 
     pub fn set_shape(&mut self, shape: Shape) {
