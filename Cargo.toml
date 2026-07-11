@@ -14,4 +14,4 @@ exclude = [".github/workflows/rust.yml", ".gitignore", "rustfmt.toml"]
 
 [dependencies]
 macroquad = "0.4.15"
-text_lib = "0.1.0"
+text_lib = "1.0.0"
