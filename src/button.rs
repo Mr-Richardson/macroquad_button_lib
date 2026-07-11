@@ -35,6 +35,7 @@ pub struct Button {
     toggle: bool,
     text: TextFit,
     state: State,
+    last_button_press: u64,
 }
 
 impl Button {
@@ -48,6 +49,7 @@ impl Button {
             text: TextFit::new(pos, size.x * 0.9, text.text, text.font, Alignment { x: AlignX::Center, y: AlignY::Center }, text.color),
             toggle,
             state: Idle,
+            last_button_press: 0,
         }
     }
 
@@ -95,50 +97,53 @@ impl Button {
         self.toggle = toggle;
     }
 
-    pub fn get_state(&mut self) -> State {
-        //TODO: cleaner implementation
-        if self.state != Disabled {
-            let mouse_pos: Vec2 = vec2(mouse_position().0, mouse_position().1);
-            let mut over: bool = false;
-            match self.shape {
-                Shape::Ellipse => {
-                    if 1.0 >= (mouse_pos.x - self.pos.x) * (mouse_pos.x - self.pos.x) / ((self.size.x * 0.5) * (self.size.x * 0.5)) + (mouse_pos.y - self.pos.y) * (mouse_pos.y - self.pos.y) / ((self.size.y * 0.5) * (self.size.y * 0.5)) {
-                        over = true;
+    pub fn get_state(&mut self, frame_count: u64) -> State {
+        if frame_count != self.last_button_press {
+            //TODO: cleaner implementation
+            if self.state != Disabled {
+                let mouse_pos: Vec2 = vec2(mouse_position().0, mouse_position().1);
+                let mut over: bool = false;
+                match self.shape {
+                    Shape::Ellipse => {
+                        if 1.0 >= (mouse_pos.x - self.pos.x) * (mouse_pos.x - self.pos.x) / ((self.size.x * 0.5) * (self.size.x * 0.5)) + (mouse_pos.y - self.pos.y) * (mouse_pos.y - self.pos.y) / ((self.size.y * 0.5) * (self.size.y * 0.5))
+                        {
+                            over = true;
+                        }
+                    }
+                    Shape::Rectangle => {
+                        if (mouse_pos.x - self.pos.x).abs() <= self.size.x * 0.5 && (mouse_pos.y - self.pos.y).abs() <= self.size.y * 0.5 {
+                            over = true;
+                        }
                     }
                 }
-                Shape::Rectangle => {
-                    if (mouse_pos.x - self.pos.x).abs() <= self.size.x * 0.5 && (mouse_pos.y - self.pos.y).abs() <= self.size.y * 0.5 {
-                        over = true;
-                    }
-                }
-            }
-            if self.toggle {
-                if over {
-                    if is_mouse_button_pressed(macroquad::input::MouseButton::Left) {
-                        if self.state == Pressed {
-                            self.state = Hovered;
+                if self.toggle {
+                    if over {
+                        if is_mouse_button_pressed(macroquad::input::MouseButton::Left) {
+                            if self.state == Pressed {
+                                self.state = Hovered;
+                            } else {
+                                self.state = Pressed;
+                            }
                         } else {
-                            self.state = Pressed;
+                            if self.state != Pressed {
+                                self.state = Hovered;
+                            }
                         }
                     } else {
                         if self.state != Pressed {
-                            self.state = Hovered;
+                            self.state = Idle;
                         }
                     }
                 } else {
-                    if self.state != Pressed {
+                    if over {
+                        if is_mouse_button_down(macroquad::input::MouseButton::Left) {
+                            self.state = Pressed;
+                        } else {
+                            self.state = Hovered;
+                        }
+                    } else {
                         self.state = Idle;
                     }
-                }
-            } else {
-                if over {
-                    if is_mouse_button_down(macroquad::input::MouseButton::Left) {
-                        self.state = Pressed;
-                    } else {
-                        self.state = Hovered;
-                    }
-                } else {
-                    self.state = Idle;
                 }
             }
         }
