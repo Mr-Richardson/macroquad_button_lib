@@ -4,7 +4,8 @@ use macroquad::input::{is_mouse_button_down, is_mouse_button_pressed};
 use macroquad::math::{Vec2, vec2};
 use macroquad::prelude::{Font, mouse_position};
 use macroquad::shapes::{draw_ellipse, draw_rectangle};
-use text_lib::text;
+use text_lib::text_fit::TextFit;
+use text_lib::{AlignX, AlignY, Alignment};
 
 pub enum Shape {
     Rectangle,
@@ -32,7 +33,7 @@ pub struct Button {
     shape: Shape,
     color: Color,
     toggle: bool,
-    text: text::Text,
+    text: TextFit,
     state: State,
 }
 
@@ -44,18 +45,7 @@ impl Button {
             size,
             shape,
             color,
-            text: text::Text::new(
-                pos,
-                size.x * 0.9,
-                text.text,
-                text.font,
-                text::Alignment {
-                    x: text::AlignX::Center,
-                    y: text::AlignY::Center,
-                },
-                text.size,
-                text.color,
-            ),
+            text: TextFit::new(pos, size.x * 0.9, text.text, text.font, Alignment { x: AlignX::Center, y: AlignY::Center }, text.color),
             toggle,
             state: Idle,
         }
@@ -95,10 +85,6 @@ impl Button {
 
     pub fn set_text_font(&mut self, font: Font) {
         self.text.set_font(font);
-    }
-
-    pub fn set_text_size(&mut self, size: u16) {
-        self.text.set_size(size);
     }
 
     pub fn set_text_color(&mut self, color: Color) {
@@ -166,7 +152,6 @@ impl Button {
 
 #[cfg(test)]
 mod tests {
-
     use super::*;
     use macroquad::prelude::*;
 
